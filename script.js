@@ -16,10 +16,7 @@ var cubeSizeW = 50;
 var cubeSizeH = 50;
 
 // Estado del juego
-
 var gameState = {
-//Debido a que este juego esta inspirado en Geometry Dash, el jugador solo tiene una vida, por lo que al perder se termina el juego.
-    vidas: 1,
     gameOver: false,
     puntaje: 0
 };
@@ -119,17 +116,8 @@ function updatePinchos(deltaTime) {
         // Detectar colisión
         if (checkCollision(pincho)) {
             console.log("¡Colisión con pincho!");
-            gameState.vidas--;
-            document.getElementById("vidas").innerText = gameState.vidas;
-            
-            // Eliminar pincho
-            pincho.element.remove();
-            pinchos.splice(i, 1);
-            
-            // Verificar Game Over
-            if (gameState.vidas <= 0) {
-                endGame();
-            }
+            endGame();
+            return;
         } 
         // Eliminar pinchos que salieron de pantalla (izquierda)
         else if (pincho.x < -100) {
@@ -158,7 +146,7 @@ function checkCollision(pincho) {
 // Función para terminar el juego
 function endGame() {
     gameState.gameOver = true;
-    console.log("¡GAME OVER! Vidas: " + gameState.vidas);
+    console.log("¡GAME OVER!");
     
     var gameOverDiv = document.getElementById("gameOverScreen");
     gameOverDiv.style.display = "flex";
@@ -172,7 +160,6 @@ function endGame() {
 
 // Función para reiniciar el juego
 function restartGame() {
-    gameState.vidas = 3;
     gameState.gameOver = false;
     gameState.puntaje = 0;
     y = 0;
@@ -181,7 +168,6 @@ function restartGame() {
     lastime = Date.now();
     
     cube.style.bottom = "0px";
-    document.getElementById("vidas").innerText = gameState.vidas;
     
     var gameOverDiv = document.getElementById("gameOverScreen");
     gameOverDiv.style.display = "none";
