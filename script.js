@@ -5,20 +5,22 @@ var gravity = -1;
 var velocity = 0;
 var y = 0;
 var lastime = 0;
-var skipetime = 1;
+var skipetime = 0.15;
 var seconds = 0;
-var nivel =  [[0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+var nivel =  [[0, 1, 1, 0, 1, 1, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 1, 0, 0, 0, 0, 0, 0, 0, 1]];
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 1, 0, 1, 0, 1, 1, 0, 0, 1]];
 var angulo = 0;
 var pinchos = [];
 var en_tierra = true;
 var jumpspeed = 17;
 var hitboxacurracity = 0.8;
 var debuglogticks = false;
+var debuglogbloques = false;
 var bloqueidx = 0;
 var bloquetipos = [0, 1]; // Tipos de bloques disponibles, actualmente aire y pinchos (1)
+var capa = 0; // Capa del nivel que se usará para generar bloques (0-3)
 
 const url = "lacanciondelsiglo.mp3";
 const url2 = "laotracancion.mp3";
@@ -72,19 +74,22 @@ function gameLoop() {
 gameLoop();
 
 function createBloque() {
-    if (!nivel[bloqueidx][0] === 0) {
+    if (!nivel[capa][bloqueidx] == 0) {
+        if (debuglogbloques) {
         console.log("creando bloque");
+        }
         var bloque = document.createElement("div");
         bloque.style.position = "fixed";
         var img = document.createElement("img");
-        if (nivel[bloqueidx][0] === 1) {
+        if (nivel[capa][bloqueidx] === 1) {
             img.src = "pincho.png";
             img.style.width = "50px";
         } else {
             //mas bloques en el futuro
         }
-    
-        console.log("bloqueidx: " + bloqueidx + " | nivel[bloqueidx][0]: " + nivel[bloqueidx][0] + " | img.src: " + img.src);
+    if (debuglogbloques) {
+        console.log("bloqueidx: " + bloqueidx + " | nivel[capa][bloqueidx]: " + nivel[capa][bloqueidx] + " | img.src: " + img.src);
+    }
         img.style.width = "50px";
         bloque.appendChild(img);
         document.body.appendChild(bloque);
@@ -92,11 +97,13 @@ function createBloque() {
         bloque.style.bottom = "0px";
         pinchos.push(bloque);
         moverPincho(bloque);
-        bloqueidx = (bloqueidx + 1) % nivel.length; // Avanza al siguiente bloque en el nivel, vuelve al inicio si llega al final
+        bloqueidx = (bloqueidx + 1) % nivel[0].length; // Avanza al siguiente bloque en el nivel, vuelve al inicio si llega al final
     }
     else {    
-        console.log("aire creado, no se hace nada" + " | bloqueidx: " + bloqueidx + " | nivel[bloqueidx][0]: " + nivel[bloqueidx][0]);    
-        bloqueidx = (bloqueidx + 1) % nivel.length; // Avanza al siguiente bloque en el nivel, vuelve al inicio si llega al final
+        if (debuglogbloques) {
+        console.log("aire creado, no se hace nada" + " | bloqueidx: " + bloqueidx + " | nivel[capa][bloqueidx]: " + nivel[capa][bloqueidx]);    
+        }
+        bloqueidx = (bloqueidx + 1) % nivel[0].length; // Avanza al siguiente bloque en el nivel, vuelve al inicio si llega al final
        }
 }
 
@@ -114,7 +121,8 @@ function moverPincho(pincho) {
     }
     if (checkCollision(cube, pincho)) {
         //alert("¡Has perdido!");
-        location.reload();
+        cube.remove();
+        location.href = "game-over.html";
     }
 }
 
@@ -134,4 +142,10 @@ function checkCollision(cube, pincho) {
         cubeRect.bottom < pinchoRect.top + (pinchoRect.height * (1 - hitboxacurracity)) ||
         cubeRect.top > pinchoRect.bottom - (pinchoRect.height * (1 - hitboxacurracity))
     );
+}
+
+
+function pararconsola() {
+    debuglogticks = !debuglogticks;
+    console.log("Debug log ticks: " + debuglogticks);
 }
