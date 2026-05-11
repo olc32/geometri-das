@@ -7,10 +7,10 @@ var y = 0;
 var lastime = 0;
 var skipetime = 1;
 var seconds = 0;
-var nivel =  [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+var nivel =  [[0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+              [0, 1, 0, 0, 0, 0, 0, 0, 0, 1]];
 var angulo = 0;
 var pinchos = [];
 var en_tierra = true;
@@ -72,12 +72,12 @@ function gameLoop() {
 gameLoop();
 
 function createBloque() {
-    if (!nivel[0][bloqueidx] === 0) {
+    if (!nivel[bloqueidx][0] === 0) {
         console.log("creando bloque");
         var bloque = document.createElement("div");
         bloque.style.position = "fixed";
         var img = document.createElement("img");
-        if (nivel[0][bloqueidx] === 1) {
+        if (nivel[bloqueidx][0] === 1) {
             img.src = "pincho.png";
             img.style.width = "50px";
         } else {
