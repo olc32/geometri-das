@@ -114,7 +114,9 @@ function createBloque() {
 }
 
 function moverPincho(pincho) {
-    var right = parseInt(pincho.style.right);
+    // Mover el pincho hacia la izquierda (aumenta right)
+    var pinchotypeSrc = pincho.querySelector("img").src || "";
+    var right = parseInt(pincho.style.right) || 0;
     right += 5;
     pincho.style.right = right + "px";
     if (right < window.innerWidth) {
@@ -122,16 +124,46 @@ function moverPincho(pincho) {
             moverPincho(pincho);
         });
     } else {
-        document.body.removeChild(pincho);
-        pinchos.splice(pinchos.indexOf(pincho), 1);
+        if (document.body.contains(pincho)) document.body.removeChild(pincho);
+        var idx = pinchos.indexOf(pincho);
+        if (idx !== -1) pinchos.splice(idx, 1);
+        return;
     }
+
     var collision = checkCollision(cube, pincho);
-    console.log(collision);
-    if (collision.side !== "sin colisión") {
-        //alert("¡Has perdido!");
-        cube.remove();
-        location.href = "game-over.html";
+
+    // Normalizamos el nombre del recurso para comparar fácilmente
+    var pinchotype = "";
+    if (pinchotypeSrc.indexOf("pincho.png") !== -1) pinchotype = "pincho";
+    else if (pinchotypeSrc.indexOf("mitad.svg") !== -1) pinchotype = "mitad";
+    else if (pinchotypeSrc.indexOf("Bloque.webp") !== -1 || pinchotypeSrc.indexOf("Bloque") !== -1) pinchotype = "bloque";
+
+    // Lógica de colisiones solicitada:
+    // - "pincho" y "mitad": matan por cualquier lado (si la hitbox acierta)
+    // - "bloque": permiten aterrizar por arriba; matan sólo por frontal
+    if (pinchotype === "pincho" || pinchotype === "mitad") {
+        if (collision.hitboxAccuracy === true && collision.side !== "sin colisión") {
+            matar();
+        }
+    } else if (pinchotype === "bloque") {
+        if (collision.hitboxAccuracy === true) {
+            if (collision.side === "superior") {
+                // Colocar el cubo encima del bloque (usar rects para calcular bottom)
+                var pinchoRect = pincho.getBoundingClientRect();
+                y = window.innerHeight - pinchoRect.top; // posiciona la parte inferior del cubo en la parte superior del bloque
+                velocity = 0;
+                en_tierra = true;
+            } else if (collision.side === "frontal") {
+                matar();
+            }
+            // colisiones por trasero o inferior no hacen nada
+        }
     }
+}
+
+function matar() {
+    cube.remove();
+    location.href = "game-over.html";
 }
 
 
