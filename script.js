@@ -5,12 +5,12 @@ var gravity = -1;
 var velocity = 0;
 var y = 0;
 var lastime = 0;
-var skipetime = 0.15;
+var skipetime = 0.11;
 var seconds = 0;
-var nivel =  [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 1, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 1, 2]];
+var nivel =  [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 1, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 var angulo = 0;
 var pinchos = [];
 var en_tierra = true;
@@ -18,9 +18,11 @@ var jumpspeed = 17;
 var hitboxacurracity = 0.6;
 var debuglogticks = false;
 var debuglogbloques = false;
-var bloqueidx = 0;
-var bloquetipos = [0, 1]; // Tipos de bloques disponibles, actualmente aire y pinchos (1)
-var capa = 3; // Capa del nivel que se usará para generar bloques (0-3)
+var bloqueidx2 = 10;
+var lvlspeed = 7;
+
+
+
 
 const url = "lacanciondelsiglo.mp3";
 const url2 = "laotracancion.mp3";
@@ -48,8 +50,9 @@ window.addEventListener("keydown", function(event) {
 function gameLoop() {
     var deltaTime = (Date.now() - lastime) / 1000;
     lastime = Date.now();
-
+    
     velocity += gravity;
+    
     y += velocity;
     cube.style.bottom = y + "px";
     if (parseInt(y) <= 0) {
@@ -65,7 +68,7 @@ function gameLoop() {
     seconds += deltaTime;
     if (seconds >= skipetime) {
         seconds = 0;
-        createBloque();
+        createColunna();
     }
    
 
@@ -73,7 +76,14 @@ function gameLoop() {
 
 gameLoop();
 
-function createBloque() {
+function createColunna() {
+    for (var i = 3; i >= 0; i--) {
+        createBloque(i, bloqueidx2);
+    }
+    bloqueidx2 = (bloqueidx2 + 1) % nivel[0].length; // Avanza al siguiente bloque en el nivel, vuelve al inicio si llega al final
+}
+
+function createBloque(capa, bloqueidx) {
     if (!nivel[capa][bloqueidx] == 0) {
         if (debuglogbloques) {
         console.log("creando bloque");
@@ -100,24 +110,29 @@ function createBloque() {
         bloque.appendChild(img);
         document.body.appendChild(bloque);
         bloque.style.right = "0px";
-        bloque.style.bottom = "0px";
+        bloque.style.bottom = (3 - capa) * 50 + "px"; // Ajusta la posición vertical según la capa
         pinchos.push(bloque);
         moverPincho(bloque);
-        bloqueidx = (bloqueidx + 1) % nivel[0].length; // Avanza al siguiente bloque en el nivel, vuelve al inicio si llega al final
+        
     }
     else {    
         if (debuglogbloques) {
         console.log("aire creado, no se hace nada" + " | bloqueidx: " + bloqueidx + " | nivel[capa][bloqueidx]: " + nivel[capa][bloqueidx]);    
         }
-        bloqueidx = (bloqueidx + 1) % nivel[0].length; // Avanza al siguiente bloque en el nivel, vuelve al inicio si llega al final
+        
        }
 }
+
+
+
+
+
 
 function moverPincho(pincho) {
     // Mover el pincho hacia la izquierda (aumenta right)
     var pinchotypeSrc = pincho.querySelector("img").src || "";
     var right = parseInt(pincho.style.right) || 0;
-    right += 5;
+    right += lvlspeed;
     pincho.style.right = right + "px";
     if (right < window.innerWidth) {
         requestAnimationFrame(function() {
@@ -146,19 +161,23 @@ function moverPincho(pincho) {
             matar();
         }
     } else if (pinchotype === "bloque") {
-        if (collision.hitboxAccuracy === true) {
+        if (collision.hitboxAccuracy === false) {
             if (collision.side === "superior") {
                 // Colocar el cubo encima del bloque (usar rects para calcular bottom)
                 var pinchoRect = pincho.getBoundingClientRect();
-                y = window.innerHeight - pinchoRect.top; // posiciona la parte inferior del cubo en la parte superior del bloque
-                velocity = 0;
+                //y = window.innerHeight - pinchoRect.top; // posiciona la parte inferior del cubo en la parte superior del bloque
+                
                 en_tierra = true;
+                velocity = 0;
+                
+                
             } else if (collision.side === "frontal") {
                 matar();
             }
             // colisiones por trasero o inferior no hacen nada
         }
     }
+    
 }
 
 function matar() {
