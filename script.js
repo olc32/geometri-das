@@ -10,15 +10,16 @@ var seconds = 0;
 var nivel =  [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 1, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+              [0, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 var angulo = 0;
 var pinchos = [];
+var lastCollision = null;
 var en_tierra = true;
 var jumpspeed = 17;
 var hitboxacurracity = 0.6;
 var debuglogticks = false;
 var debuglogbloques = false;
-var bloqueidx2 = 10;
+var bloqueidx2 = 0;
 var lvlspeed = 7;
 
 
@@ -51,8 +52,34 @@ function gameLoop() {
     var deltaTime = (Date.now() - lastime) / 1000;
     lastime = Date.now();
     
-    velocity += gravity;
+    if (getcolisiontype() !== null) {
+        console.log(getcolisiontype().element.firstElementChild.src)
+        
+        if (getcolisiontype().element.firstElementChild.src === "https://ubiquitous-space-guide-r4wrjvx9q6jwfwqx7-5501.app.github.dev/Bloque.webp") {
+            console.log('%c' + "colision con bloque, aterrizando", "color: green; font-size: 16px");
+            en_tierra = true;
+            velocity = 0;
+            y = parseInt(getcolisiontype().element.style.bottom) + 50 + "px";
+            
+        }
+        else {
+            console.log('%c' + "colision con pincho o mitad, aplicando gravedad normal", "color: red; font-size: 16px");
+            if (parseInt(y) <= 0) {
+                
+                 
+           }
+            else {
+                en_tierra = false;
+                
+                velocity += gravity;
+            }
+        }
+    }    
     
+velocity += gravity;
+    
+    
+
     y += velocity;
     cube.style.bottom = y + "px";
     if (parseInt(y) <= 0) {
@@ -84,7 +111,7 @@ function createColunna() {
 }
 
 function createBloque(capa, bloqueidx) {
-    if (!nivel[capa][bloqueidx] == 0) {
+    if (nivel[capa][bloqueidx] !== 0) {
         if (debuglogbloques) {
         console.log("creando bloque");
         }
@@ -147,6 +174,15 @@ function moverPincho(pincho) {
 
     var collision = checkCollision(cube, pincho);
 
+    if (collision.side !== "sin colisión") {
+        var idx = pinchos.indexOf(pincho);
+        lastCollision = {
+            element: pincho,
+            index: idx,
+            collision: collision
+        };
+    }
+
     // Normalizamos el nombre del recurso para comparar fácilmente
     var pinchotype = "";
     if (pinchotypeSrc.indexOf("pincho.png") !== -1) pinchotype = "pincho";
@@ -162,16 +198,8 @@ function moverPincho(pincho) {
         }
     } else if (pinchotype === "bloque") {
         if (collision.hitboxAccuracy === false) {
-            if (collision.side === "superior") {
-                // Colocar el cubo encima del bloque (usar rects para calcular bottom)
-                var pinchoRect = pincho.getBoundingClientRect();
-                //y = window.innerHeight - pinchoRect.top; // posiciona la parte inferior del cubo en la parte superior del bloque
-                
-                en_tierra = true;
-                velocity = 0;
-                
-                
-            } else if (collision.side === "frontal") {
+            if (collision.side === "frontal") {
+            
                 matar();
             }
             // colisiones por trasero o inferior no hacen nada
@@ -181,8 +209,10 @@ function moverPincho(pincho) {
 }
 
 function matar() {
+    /*
     cube.remove();
     location.href = "game-over.html";
+    */
 }
 
 
@@ -242,6 +272,7 @@ function checkCollision(cube, pincho) {
         side: "sin colisión",
         hitboxAccuracy: false
     };
+    
 }
 
 
@@ -250,4 +281,29 @@ function pararconsola() {
     debuglogbloques = !debuglogbloques;
     console.log("Debug log ticks: " + debuglogticks);
     console.log("Debug log bloques: " + debuglogbloques);
+}
+
+function getcolisiontype() {
+    lastCollision = null;
+    for (var i = 0; i < pinchos.length; i++) {
+        var collision = checkCollision(cube, pinchos[i]);
+        if (collision.side !== "sin colisión") {
+            lastCollision = {
+                element: pinchos[i],
+                index: i,
+                collision: collision
+            };
+            console.log("Colisión con pincho " + i + ": " + collision.side + " | Hitbox accuracy: " + collision.hitboxAccuracy);
+            return lastCollision;
+        }
+    }
+    return null;
+}
+
+function getultimaColision() {
+    return lastCollision;
+}
+
+function getultimaColision() {
+    return lastCollision;
 }
