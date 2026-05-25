@@ -7,22 +7,22 @@ var y = 0;
 var lastime = 0;
 var skipetime = 0.11;
 var seconds = 0;
-var nivel =  [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+var nivel =  [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 1, 0, 3, 1, 1, 1, 3, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 var angulo = 0;
 var pinchos = [];
 var lastCollision = null;
 var en_tierra = true;
-var jumpspeed = 17;
+var jumpspeed = 16;
 var hitboxacurracity = 0.6;
 var debuglogticks = false;
 var debuglogbloques = false;
 var bloqueidx2 = 0;
 var lvlspeed = 7;
-
-
+var noclip = false; // Si es true, el jugador no muere al colisionar con pinchos o mitades
+var touchsave = 0
 
 
 const url = "lacanciondelsiglo.mp3";
@@ -32,61 +32,44 @@ music.play();
 
 cube.style.position = "absolute";
 cube.style.bottom = "0px";
-window.addEventListener("click", function() {
-    if (en_tierra) {
-    velocity = jumpspeed;
-    en_tierra = false;
-    }
-});
 
-window.addEventListener("keydown", function(event) {
-    if (event.code === "Space") {
-        if (en_tierra) {
-        velocity = jumpspeed;
-        en_tierra = false;
-        }
-    }
-});
 
 function gameLoop() {
     var deltaTime = (Date.now() - lastime) / 1000;
     lastime = Date.now();
     
-    if (getcolisiontype() !== null) {
-        console.log(getcolisiontype().element.firstElementChild.src)
-        
-        if (getcolisiontype().element.firstElementChild.src === "https://ubiquitous-space-guide-r4wrjvx9q6jwfwqx7-5501.app.github.dev/Bloque.webp") {
+    var collisionInfo = getcolisiontype();
+
+//la mounstrosidad del sistema de colisiones, que detecta el tipo de colision y la precisión de la hitbox para aplicar la lógica solicitada (aterrizaje en bloques, muerte por pinchos y mitades, etc)
+
+    if (collisionInfo !== null) {
+        var collisionSrc = collisionInfo.element.firstElementChild.src || "";
+        console.log(collisionSrc);
+
+        if (collisionSrc.indexOf("Bloque.webp") !== -1 || collisionSrc.indexOf("Bloque") !== -1) {
             console.log('%c' + "colision con bloque, aterrizando", "color: green; font-size: 16px");
             en_tierra = true;
             velocity = 0;
-            y = parseInt(getcolisiontype().element.style.bottom) + 50 + "px";
-            
+            y = parseInt(collisionInfo.element.style.bottom) + 47;
         }
-        else {
-            console.log('%c' + "colision con pincho o mitad, aplicando gravedad normal", "color: red; font-size: 16px");
-            if (parseInt(y) <= 0) {
-                
-                 
-           }
-            else {
-                en_tierra = false;
-                
-                velocity += gravity;
+    } else {
+        if (y <= 0) {
+            en_tierra = true
+            if (touchsave <= 0) {
+                velocity = 0
             }
+            console.log('%c' + "colision con suelo, deteniendo", "color: blue; font-size: 16px");
         }
-    }    
-    
-velocity += gravity;
-    
-    
+        else{
+            velocity += gravity
+            en_tierra = false
+            console.log('%c' + "cayendo", "color: gray; font-size: 16px");
+        }
+    }
 
     y += velocity;
     cube.style.bottom = y + "px";
-    if (parseInt(y) <= 0) {
-        y = 0;
-        velocity = 0;
-        en_tierra = true;
-    }
+    
     if (debuglogticks) {
         console.log("Velocity: " + velocity + " | Bottom: " + cube.style.bottom + " | Y: " + y + " | DeltaTime: " + deltaTime + " | Seconds: " + seconds);
     }
@@ -97,11 +80,38 @@ velocity += gravity;
         seconds = 0;
         createColunna();
     }
-   
+    touchsave --
+    if (touchsave < 0) {
+    touchsave = 0;
+   }
 
 }
 
 gameLoop();
+
+window.addEventListener("click", function() {
+    if (en_tierra) {
+    velocity = jumpspeed;
+    en_tierra = false;
+    touchsave = 5;
+    console.log('%c' + "saltando", "color: aqua; font-size: 16px");
+    }else {
+        console.log('%c' + "¡No puedes saltar en el aire!", "color: orange; font-size: 16px");
+    }
+});
+
+window.addEventListener("keydown", function(event) {
+    if (event.code === "Space") {
+        if (en_tierra) {
+        velocity = jumpspeed;
+        en_tierra = false;
+        touchsave = 15;
+        console.log('%c' + "saltando", "color: aqua; font-size: 16px");
+        }else {
+            console.log('%c' + "¡No puedes saltar en el aire!", "color: orange; font-size: 16px");
+        }
+    }
+});
 
 function createColunna() {
     for (var i = 3; i >= 0; i--) {
@@ -209,10 +219,14 @@ function moverPincho(pincho) {
 }
 
 function matar() {
-    /*
+    if (!noclip) {
+    console.log('%c' + "¡Has muerto!", "color: darkred; font-size: 20px");
     cube.remove();
     location.href = "game-over.html";
-    */
+    }
+    else {
+        console.log('%c' + "¡Has muerto! Pero el modo noclip está activo", "color: darkgreen; font-size: 20px");
+        }
 }
 
 
