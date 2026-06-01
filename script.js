@@ -21,8 +21,13 @@ var debuglogticks = false;
 var debuglogbloques = false;
 var bloqueidx2 = 0;
 var lvlspeed = 7;
-var noclip = false; // Si es true, el jugador no muere al colisionar con pinchos o mitades
-var touchsave = 0
+var noclip = false;
+var jumpQueued = false;
+var jumpQueuedAt = 0;
+var jumpBufferMs = 120;
+var coyoteTimeMs = 90;
+var lastGroundedAt = 0;
+var jumpHeld = false;
 
 
 const url = "lacanciondelsiglo.mp3";
@@ -35,8 +40,12 @@ cube.style.bottom = "0px";
 
 
 function gameLoop() {
-    var deltaTime = (Date.now() - lastime) / 1000;
-    lastime = Date.now();
+    var now = performance.now();
+    if (lastime === 0) {
+        lastime = now;
+    }
+    var deltaTime = (now - lastime) / 1000;
+    lastime = now;
     
     var collisionInfo = getcolisiontype();
 
@@ -51,20 +60,38 @@ function gameLoop() {
             en_tierra = true;
             velocity = 0;
             y = parseInt(collisionInfo.element.style.bottom) + 47;
+            lastGroundedAt = now;
         }
     } else {
         if (y <= 0) {
             en_tierra = true
-            if (touchsave <= 0) {
-                velocity = 0
-            }
+            velocity = 0;
             console.log('%c' + "colision con suelo, deteniendo", "color: blue; font-size: 16px");
+            lastGroundedAt = now;
         }
         else{
             velocity += gravity
             en_tierra = false
             console.log('%c' + "cayendo", "color: gray; font-size: 16px");
         }
+    }
+
+    if (jumpQueued) {
+        var bufferedJumpAlive = now - jumpQueuedAt <= jumpBufferMs;
+        var coyoteJumpAlive = en_tierra || (now - lastGroundedAt <= coyoteTimeMs);
+
+        if (bufferedJumpAlive && coyoteJumpAlive) {
+            velocity = jumpspeed;
+            en_tierra = false;
+            jumpQueued = false;
+            console.log('%c' + "saltando", "color: aqua; font-size: 16px");
+        } else if (!bufferedJumpAlive) {
+            jumpQueued = false;
+        }
+    }
+
+    if (jumpHeld && en_tierra && !jumpQueued) {
+        requestJump();
     }
 
     y += velocity;
@@ -80,36 +107,33 @@ function gameLoop() {
         seconds = 0;
         createColunna();
     }
-    touchsave --
-    if (touchsave < 0) {
-    touchsave = 0;
-   }
 
 }
 
 gameLoop();
 
+function requestJump() {
+    jumpQueued = true;
+    jumpQueuedAt = performance.now();
+}
+
 window.addEventListener("click", function() {
-    if (en_tierra) {
-    velocity = jumpspeed;
-    en_tierra = false;
-    touchsave = 5;
-    console.log('%c' + "saltando", "color: aqua; font-size: 16px");
-    }else {
-        console.log('%c' + "¡No puedes saltar en el aire!", "color: orange; font-size: 16px");
-    }
+    requestJump();
 });
 
 window.addEventListener("keydown", function(event) {
     if (event.code === "Space") {
-        if (en_tierra) {
-        velocity = jumpspeed;
-        en_tierra = false;
-        touchsave = 15;
-        console.log('%c' + "saltando", "color: aqua; font-size: 16px");
-        }else {
-            console.log('%c' + "¡No puedes saltar en el aire!", "color: orange; font-size: 16px");
+        jumpHeld = true;
+        event.preventDefault();
+        if (!event.repeat) {
+            requestJump();
         }
+    }
+});
+
+window.addEventListener("keyup", function(event) {
+    if (event.code === "Space") {
+        jumpHeld = false;
     }
 });
 
