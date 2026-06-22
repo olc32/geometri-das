@@ -131,6 +131,32 @@ window.addEventListener("keydown", function(event) {
     }
 });
 
+/*window.addEventListener("click", function() {
+    if (en_tierra) {
+    velocity = jumpspeed;
+    en_tierra = false;
+    touchsave = 5;
+    console.log('%c' + "saltando", "color: aqua; font-size: 16px");
+    }else {
+        console.log('%c' + "¡No puedes saltar en el aire!", "color: orange; font-size: 16px");
+    }
+});*/
+});*/
+
+/*window.addEventListener("keydown", function(event) {
+/*window.addEventListener("keydown", function(event) {
+    if (event.code === "Space") {
+        if (en_tierra) {
+        velocity = jumpspeed;
+        en_tierra = false;
+        touchsave = 15;
+        console.log('%c' + "saltando", "color: aqua; font-size: 16px");
+        }else {
+            console.log('%c' + "¡No puedes saltar en el aire!", "color: orange; font-size: 16px");
+        }
+    }
+});*/
+
 window.addEventListener("keyup", function(event) {
     if (event.code === "Space") {
         jumpHeld = false;
