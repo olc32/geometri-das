@@ -10,7 +10,7 @@ var seconds = 0;
 var nivel =  [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 1, 0, 3, 1, 1, 1, 3, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 1, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+              [1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 1, 0, 3, 1, 1, 1, 3, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 var angulo = 0;
 var pinchos = [];
 var lastCollision = null;
@@ -21,13 +21,9 @@ var debuglogticks = false;
 var debuglogbloques = false;
 var bloqueidx2 = 0;
 var lvlspeed = 7;
-var noclip = false;
-var jumpQueued = false;
-var jumpQueuedAt = 0;
-var jumpBufferMs = 120;
-var coyoteTimeMs = 90;
-var lastGroundedAt = 0;
-var jumpHeld = false;
+var noclip = false; // Si es true, el jugador no muere al colisionar con pinchos o mitades
+var touchsave = 0
+var pressing_space = 0
 
 
 const url = "lacanciondelsiglo.mp3";
@@ -40,13 +36,11 @@ cube.style.bottom = "0px";
 
 
 function gameLoop() {
-    var now = performance.now();
-    if (lastime === 0) {
-        lastime = now;
+    var deltaTime = (Date.now() - lastime) / 1000;
+    lastime = Date.now();
+    if (pressing_space === 1){
+        jump()
     }
-    var deltaTime = (now - lastime) / 1000;
-    lastime = now;
-    
     var collisionInfo = getcolisiontype();
 
 //la mounstrosidad del sistema de colisiones, que detecta el tipo de colision y la precisión de la hitbox para aplicar la lógica solicitada (aterrizaje en bloques, muerte por pinchos y mitades, etc)
@@ -60,38 +54,20 @@ function gameLoop() {
             en_tierra = true;
             velocity = 0;
             y = parseInt(collisionInfo.element.style.bottom) + 47;
-            lastGroundedAt = now;
         }
     } else {
         if (y <= 0) {
             en_tierra = true
-            velocity = 0;
+            if (touchsave <= 0) {
+                velocity = 0
+            }
             console.log('%c' + "colision con suelo, deteniendo", "color: blue; font-size: 16px");
-            lastGroundedAt = now;
         }
         else{
             velocity += gravity
             en_tierra = false
             console.log('%c' + "cayendo", "color: gray; font-size: 16px");
         }
-    }
-
-    if (jumpQueued) {
-        var bufferedJumpAlive = now - jumpQueuedAt <= jumpBufferMs;
-        var coyoteJumpAlive = en_tierra || (now - lastGroundedAt <= coyoteTimeMs);
-
-        if (bufferedJumpAlive && coyoteJumpAlive) {
-            velocity = jumpspeed;
-            en_tierra = false;
-            jumpQueued = false;
-            console.log('%c' + "saltando", "color: aqua; font-size: 16px");
-        } else if (!bufferedJumpAlive) {
-            jumpQueued = false;
-        }
-    }
-
-    if (jumpHeld && en_tierra && !jumpQueued) {
-        requestJump();
     }
 
     y += velocity;
@@ -107,31 +83,16 @@ function gameLoop() {
         seconds = 0;
         createColunna();
     }
+    touchsave --
+    if (touchsave < 0) {
+    touchsave = 0;
+   }
 
 }
 
 gameLoop();
 
-function requestJump() {
-    jumpQueued = true;
-    jumpQueuedAt = performance.now();
-}
-
 window.addEventListener("click", function() {
-    requestJump();
-});
-
-window.addEventListener("keydown", function(event) {
-    if (event.code === "Space") {
-        jumpHeld = true;
-        event.preventDefault();
-        if (!event.repeat) {
-            requestJump();
-        }
-    }
-});
-
-/*window.addEventListener("click", function() {
     if (en_tierra) {
     velocity = jumpspeed;
     en_tierra = false;
@@ -140,12 +101,11 @@ window.addEventListener("keydown", function(event) {
     }else {
         console.log('%c' + "¡No puedes saltar en el aire!", "color: orange; font-size: 16px");
     }
-});*/
-});*/
+});
 
-/*window.addEventListener("keydown", function(event) {
-/*window.addEventListener("keydown", function(event) {
-    if (event.code === "Space") {
+
+function jump() {
+    
         if (en_tierra) {
         velocity = jumpspeed;
         en_tierra = false;
@@ -154,14 +114,8 @@ window.addEventListener("keydown", function(event) {
         }else {
             console.log('%c' + "¡No puedes saltar en el aire!", "color: orange; font-size: 16px");
         }
-    }
-});*/
-
-window.addEventListener("keyup", function(event) {
-    if (event.code === "Space") {
-        jumpHeld = false;
-    }
-});
+    
+}
 
 function createColunna() {
     for (var i = 3; i >= 0; i--) {
@@ -370,4 +324,16 @@ function getultimaColision() {
 
 function getultimaColision() {
     return lastCollision;
-}
+} 
+
+window.addEventListener("keydown", (event) => {
+    if (event.code === "Space") {
+        pressing_space = 1
+    }
+})
+
+window.addEventListener("keyup", (event) => {
+    if (event.code === "Space") {
+        pressing_space = 0
+    }
+})
