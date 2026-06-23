@@ -33,6 +33,7 @@ music.play();
 
 cube.style.position = "absolute";
 cube.style.bottom = "0px";
+cube.style.left = "30px"
 
 
 function gameLoop() {
@@ -123,7 +124,7 @@ function createColunna() {
     }
     bloqueidx2 = (bloqueidx2 + 1); // Avanza al siguiente bloque en el nivel, vuelve al inicio si llega al final
     if (bloqueidx2 > nivel[0].length){
-        alert("you win")
+        location.href = "win.html"
     }
 }
 
