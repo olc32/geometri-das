@@ -21,10 +21,10 @@ var debuglogticks = false;
 var debuglogbloques = false;
 var bloqueidx2 = 0;
 var lvlspeed = 7;
-var noclip = false; // Si es true, el jugador no muere al colisionar con pinchos o mitades
+var noclip = true; // Si es true, el jugador no muere al colisionar con pinchos o mitades
 var touchsave = 0
 var pressing_space = 0
-
+var nowin = true
 
 const url = "lacanciondelsiglo.mp3";
 const url2 = "laotracancion.mp3";
@@ -34,6 +34,49 @@ music.play();
 cube.style.position = "absolute";
 cube.style.bottom = "0px";
 cube.style.left = "30px"
+
+const SAVED_LEVEL_ENDPOINTS = [
+    'http://127.0.0.1:5501/saved-level',
+    'http://localhost:5501/saved-level',
+    '/saved-level'
+];
+
+async function fetchSavedLevel() {
+    for (const url of SAVED_LEVEL_ENDPOINTS) {
+        try {
+            console.log('Intentando cargar nivel guardado desde:', url);
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                cache: 'no-store'
+            });
+            console.log('Respuesta de', url, response.status);
+            if (!response.ok) {
+                continue;
+            }
+            const datos = await response.json();
+            if (datos && datos.level) {
+                console.log('Nivel guardado cargado desde el servidor:', datos.file || url);
+                nivel = datos.level;
+                return true;
+            }
+        } catch (error) {
+            console.warn('Fallo al cargar nivel desde', url, error.message);
+        }
+    }
+    return false;
+}
+
+window.addEventListener('load', async function() {
+    const loaded = await fetchSavedLevel();
+    if (!loaded) {
+        console.log('No se cargó nivel guardado, usando nivel por defecto.');
+    }
+    gameLoop();
+});
+
 
 
 function gameLoop() {
@@ -91,8 +134,6 @@ function gameLoop() {
 
 }
 
-gameLoop();
-
 window.addEventListener("click", function() {
     if (en_tierra) {
     velocity = jumpspeed;
@@ -124,8 +165,11 @@ function createColunna() {
     }
     bloqueidx2 = (bloqueidx2 + 1); // Avanza al siguiente bloque en el nivel, vuelve al inicio si llega al final
     if (bloqueidx2 > nivel[0].length){
+        if (nowin === false) {
+        
+       
         location.href = "win.html"
-    }
+    }}
 }
 
 function createBloque(capa, bloqueidx) {

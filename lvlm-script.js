@@ -8,7 +8,45 @@ var bloques = [" ", "▲", "▴", "■"]
 button.addEventListener("click", () => maketable());
 var pincel = 0
 var buttonchg = document.getElementById("nextpincl")
+var curpin = document.getElementById("curpin")
+var exptoserv = document.getElementById("exptoserv")
 
+
+buttonchg.addEventListener("click", () => {
+    pincel = (pincel + 1) % bloques.length
+    curpin.textContent = "Pincel actual: " + bloques[pincel]
+
+})
+var exportButton = document.getElementById("exportLevel");
+exportButton.addEventListener("click", () => {
+    const levelData = [];
+    for (let i = 0; i < bodytable.children.length; i++) {
+        const row = bodytable.children[i];
+        const rowData = [];
+        for (let j = 0; j < row.children.length; j++) {
+            const cell = row.children[j];
+            switch (cell.textContent) {
+                case " ":
+                    rowData.push(0);
+                    break;
+                case "▲":
+                    rowData.push(1);
+                    break;
+                case "▴":
+                    rowData.push(2);
+                    break;
+                case "■":
+                    rowData.push(3);
+                    break;
+                default:
+                    rowData.push(0); // Default to 0 for unrecognized characters
+            }
+        }
+        levelData.push(rowData);
+    }
+    const jsonLevelData = JSON.stringify(levelData);
+    exportarNivel(levelData);
+});
 
 function maketable() {
     console.log("generando...")
@@ -39,6 +77,76 @@ levelTable.addEventListener("click", function(event){
     const celda = event.target
     console.log(celda)
     if (celda.nodeName == "TD") {
-        celda.textContent = bloques[(bloques.indexOf(celda.textContent) + 1) % bloques.length]
+        celda.textContent = bloques[pincel]
     }
 })
+
+function exportarNivel(levelData) {
+    const contenido = JSON.stringify(levelData);
+    
+    // Crear un Blob con el contenido y el tipo MIME
+    const blob = new Blob([contenido], { type: 'text/json' });
+    
+    // Crear un enlace temporal
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement('a');
+    
+    // Configurar el enlace
+    enlace.href = url;
+    enlace.download = 'level.json'; // Nombre del archivo
+    
+    // Simular un clic para descargar
+    enlace.click();
+    
+    // Liberar memoria
+    URL.revokeObjectURL(url);
+}
+
+exptoserv.addEventListener("click", () => {
+    const levelData = [];
+    for (let i = 0; i < bodytable.children.length; i++) {
+        const row = bodytable.children[i];
+        const rowData = [];
+        for (let j = 0; j < row.children.length; j++) {
+            const cell = row.children[j];
+            switch (cell.textContent) {
+                case " ":
+                    rowData.push(0);
+                    break;
+                case "▲":
+                    rowData.push(1);
+                    break;
+                case "▴":
+                    rowData.push(2);
+                    break;
+                case "■":
+                    rowData.push(3);
+                    break;
+                default:
+                    rowData.push(0); // Default to 0 for unrecognized characters
+            }
+        }
+        levelData.push(rowData);
+    }
+    fetch('/lvlm-script', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(levelData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+        alert('Level exported to server successfully!');
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert('Error exporting level to server.');
+    });
+});
+
+
+
+
+

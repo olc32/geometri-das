@@ -7,10 +7,15 @@
     <link rel="stylesheet" href="lvlmk.css">
 </head>
 <body>
-    <input type="text" id="levelLength" placeholder="length">ç
-    <button id="generateLevel">Generate Level</button>
-    <p id="curpin"></p>
-    <button id="nextpincl">Siguiente pincel</button>
+    <div style="display: flex;">
+        <input type="text" id="levelLength" placeholder="length">
+        <button id="generateLevel">Generate Level</button>
+        <button id="exportLevel">Export Level</button>
+        <button id="exptoserv">Export to Server</button>
+        <button id="nextpincl">Siguiente pincel</button>
+        <p id="curpin">Pincel actual: </p>
+    </div>
+    
     <table id="levelTable"><tbody id="levelTableBody"></tbody></table>
 </body>
 <script src="lvlm-script.js"></script>
